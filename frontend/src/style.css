@@ -1,0 +1,426 @@
+/* Base */
+html {
+  color-scheme: light;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #f1f5f9;
+}
+
+span.bold-text {
+  color: #23272d;
+  font-weight: bold;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+/* Buttons */
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: #254575;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Layout */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.grid.two-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.topbar h1 {
+  margin: 0 0 0.35rem;
+  font-size: 1.8rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tabs button {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.tabs button.active {
+  background: #0f172a;
+  color: #fff;
+}
+
+/* Notices */
+.notice {
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.notice.error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.notice.success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+/* Panels */
+.panel {
+  background: white;
+  border-radius: 18px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.panel h2 {
+  margin-top: 0;
+}
+
+/* Forms */
+.inline-form {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.inline-form.save-form {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.inline-form label,
+.modal-card label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: white;
+}
+
+/* Control Panel */
+.direction-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 5%;
+  margin-bottom: 1rem;
+}
+
+.action-row {
+  margin-top: 0.75rem;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.status-grid div {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 0.85rem;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.status-grid span {
+  color: #23272d;
+  font-size: 0.9rem;
+}
+
+.status-grid strong {
+  font-size: 1.05rem;
+}
+
+/* Movement Summary */
+.movement-summary {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.movement-summary h3 {
+  margin-top: 0;
+}
+
+.movement-summary ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+/* History Panel */
+.history-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.table-wrap {
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  white-space: nowrap;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  background: #f8fafc;
+}
+
+.empty-cell {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #64748b;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.modal-card {
+  width: min(460px, 100%);
+  background: white;
+  border-radius: 18px;
+  padding: 1.2rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+}
+
+.modal-card h2 {
+  margin-top: 0;
+}
+
+.modal-hint {
+  color: #475569;
+  margin-top: -0.25rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* History Summary */
+.history-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.history-summary div {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 0.85rem;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.history-summary span {
+  color: #23272d;
+  font-size: 0.9rem;
+}
+
+/* Trajectory Map */
+.trajectory-wrap {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.trajectory-map {
+  width: 100%;
+  min-height: 280px;
+  max-height: 420px;
+  background: linear-gradient(0deg, #f8fafc 0, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+}
+
+.axis-line {
+  stroke: #94a3b8;
+  stroke-width: 0.6;
+  stroke-dasharray: 1.5 1.5;
+}
+
+.trajectory-path {
+  stroke-width: 1;
+}
+
+.trajectory-point {
+  fill: #1d4ed8;
+  stroke: #fff;
+  stroke-width: 0.8;
+}
+
+.trajectory-start {
+  fill: #16a34a;
+  stroke: #fff;
+  stroke-width: 0.8;
+}
+
+.trajectory-end {
+  fill: #dc2626;
+  stroke: #fff;
+  stroke-width: 0.8;
+}
+
+.trajectory-legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.trajectory-legend div {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 0.85rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.trajectory-legend span {
+  color: #23272d;
+}
+
+.trajectory-subtitle {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+}
+
+.trajectory-empty {
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+  padding: 1rem;
+  color: #64748b;
+  background: #f8fafc;
+}
+
+/* Control Section */
+.control-section {
+  margin-bottom: 1rem;
+}
+
+.control-label {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.direction-btn {
+  box-sizing: border-box;
+  margin-left: 10%;
+  width: 80%;
+  grid-column: 1 / -1;
+}
+
+.relax-btn {
+  box-sizing: border-box;
+  margin-left: 10%;
+  width: 80%;
+}
+
+.modal-preview {
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.no-movement {
+  color: #64748b;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+
+  .grid.two-columns,
+  .inline-form.save-form {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .history-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
