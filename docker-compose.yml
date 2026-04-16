@@ -1,0 +1,26 @@
+name: robotdog
+
+services:
+  db:
+    image: mysql:8.4
+    container_name: robotdog-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: robot_dog
+      MYSQL_USER: robot
+      MYSQL_PASSWORD: robotpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpass"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql_data:
+    external: true
+    name: robotdog_mysql_data
