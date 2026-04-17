@@ -12,7 +12,8 @@ export default function HistoryPanel({ movements, onRefresh, loading }) {
     // Normalize movements to array and compute summary stats
     const rows = Array.isArray(movements) ? [...movements] : [];
     const totalDistance = rows.reduce((sum, item) => sum + Number(item.distance_real || 0), 0);
-    const latest = rows.length > 0 ? rows[rows.length - 1] : null;
+    const latest = rows.length > 0 ? rows[0] : null;
+    const formattedTimestamp = latest ? new Date(latest.timestamp).toLocaleString() : '—';
 
     /**
      * Attaches click event listener to the refresh button.
@@ -51,7 +52,7 @@ export default function HistoryPanel({ movements, onRefresh, loading }) {
             <div className="history-summary">
                 <div><span>Records</span><span className="bold-text">{rows.length}</span></div>
                 <div><span>Total distance</span><span className="bold-text">{totalDistance.toFixed(2)} cm</span></div>
-                <div><span>Last save</span><span className="bold-text">{latest ? latest.timestamp : '—'}</span></div>
+                <div><span>Last save</span><span className="bold-text">{formattedTimestamp}</span></div>
             </div>
 
             <div className="panel-subsection">
