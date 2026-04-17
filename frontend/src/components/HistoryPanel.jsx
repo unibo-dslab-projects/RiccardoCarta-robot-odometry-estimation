@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react';
 import TrajectoryMap from './TrajectoryMap.jsx';
 
 /**
@@ -6,38 +5,11 @@ import TrajectoryMap from './TrajectoryMap.jsx';
  * Shows a table of saved movements, summary statistics, and a trajectory map.
  */
 export default function HistoryPanel({ movements, onRefresh, loading }) {
-    // Ref for the refresh button to attach event listeners
-    const refreshRef = useRef(null);
-
-    // Normalize movements to array and compute summary stats
+    // Normalize movements to an array and compute summary stats
     const rows = Array.isArray(movements) ? [...movements] : [];
     const totalDistance = rows.reduce((sum, item) => sum + Number(item.distance_real || 0), 0);
     const latest = rows.length > 0 ? rows[0] : null;
     const formattedTimestamp = latest ? new Date(latest.timestamp).toLocaleString() : '—';
-
-    /**
-     * Attaches click event listener to the refresh button.
-     * Calls onRefresh if not currently loading.
-     * Cleans up listener on unmount.
-     */
-    useEffect(() => {
-        const btn = refreshRef.current;
-        if (!btn) {
-            return;
-        }
-
-        const handleClick = () => {
-            if (!loading) {
-                onRefresh();
-            }
-        };
-
-        btn.addEventListener('click', handleClick);
-
-        return () => {
-            btn.removeEventListener('click', handleClick);
-        };
-    }, [onRefresh, loading]);
 
     return (
         <section className="panel history-panel">
@@ -46,7 +18,13 @@ export default function HistoryPanel({ movements, onRefresh, loading }) {
                     <h2>Saved Movements History</h2>
                     <p>Here you can find the table and the trajectory reconstructed from saved movements.</p>
                 </div>
-                <button type="button" ref={refreshRef} disabled={loading}>Refresh</button>
+                <button
+                    type="button"
+                    onClick={() => !loading && onRefresh()}
+                    disabled={loading}
+                >
+                    Refresh
+                </button>
             </div>
 
             <div className="history-summary">
@@ -84,7 +62,7 @@ export default function HistoryPanel({ movements, onRefresh, loading }) {
                             rows.map((item) => (
                                 <tr key={item.id}>
                                     <td>{item.id}</td>
-                                    <td>{item.timestamp}</td>
+                                    <td>{new Date(item.timestamp).toLocaleString()}</td>
                                     <td>{item.direction}</td>
                                     <td>{item.steps}</td>
                                     <td>{item.step_size}</td>

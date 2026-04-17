@@ -1,8 +1,9 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 
 /**
  * ControlPanel component for robot movement and status management.
  * Handles keyboard shortcuts, button events, and form submissions for robot control.
+ * Uses React synthetic events for better performance and cleaner code.
  */
 export default function ControlPanel({
     status,
@@ -15,153 +16,85 @@ export default function ControlPanel({
     onRelax,
     onSaveMeasurement,
 }) {
-    // Refs for form and button elements to attach event listeners
-    const saveFormRef = useRef(null);
-    const stepFormRef = useRef(null);
-    const moveButtonRef = useRef(null);
-    const turnButtonRef = useRef(null);
-    const relaxButtonRef = useRef(null);
-
-    /**
-     * Sets up keyboard event listeners for robot control.
-     * Maps specific keys to actions (move, turn, relax).
-     * Cleans up listeners on unmount.
-     */
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (loading) {
-                return;
-            }
-
-            const keyMap = {
-                'm': 'move',
-                'M': 'move',
-                't': 'turn',
-                'T': 'turn',
-                ' ': 'relax',
-                'r': 'relax',
-                'R': 'relax',
-            };
-
-            const action = keyMap[e.key];
-            if (!action) {
-                return;
-            }
-
-            e.preventDefault();
-
-            if (action === 'move') {
-                onOpenMove();
-            }
-            if (action === 'turn') {
-                onOpenTurn();
-            }
-            if (action === 'relax') {
-                onRelax();
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [loading, onOpenMove, onOpenTurn, onRelax]);
-
-    /**
-     * Attaches click event listeners to move, turn, and relax buttons.
-     * Cleans up listeners on unmount.
-     */
-    useEffect(() => {
-        const moveBtn = moveButtonRef.current;
-        const turnBtn = turnButtonRef.current;
-        const relaxBtn = relaxButtonRef.current;
-
-        if (!moveBtn || !turnBtn || !relaxBtn) {
-            return;
-        }
-
-        const handleMoveClick = () => onOpenMove();
-        const handleTurnClick = () => onOpenTurn();
-        const handleRelaxClick = () => onRelax();
-
-        moveBtn.addEventListener('click', handleMoveClick);
-        turnBtn.addEventListener('click', handleTurnClick);
-        relaxBtn.addEventListener('click', handleRelaxClick);
-
-        return () => {
-            moveBtn.removeEventListener('click', handleMoveClick);
-            turnBtn.removeEventListener('click', handleTurnClick);
-            relaxBtn.removeEventListener('click', handleRelaxClick);
-        };
-    }, [onOpenMove, onOpenTurn, onRelax]);
-
     /**
      * Handles step size form submission.
      * Validates input and calls onSetStep with the new value.
+     * @param {Event} e - Form submit event
      */
-    useEffect(() => {
-        const stepForm = stepFormRef.current;
-        if (!stepForm) {
-            return;
-        }
-
-        const handleStepSubmit = (event) => {
-            event.preventDefault();
-            const value = Number(event.target.stepSize.value);
-            if (!Number.isFinite(value)) {
-                return;
-            }
+    const handleStepSubmit = (e) => {
+        e.preventDefault();
+        const value = Number(e.target.stepSize.value);
+        if (Number.isFinite(value)) {
             onSetStep(value);
-        };
-
-        stepForm.addEventListener('submit', handleStepSubmit);
-
-        return () => {
-            stepForm.removeEventListener('submit', handleStepSubmit);
-        };
-    }, [onSetStep]);
+        }
+    };
 
     /**
      * Handles save measurement form submission.
      * Validates inputs and calls onSaveMeasurement with the new values.
+     * @param {Event} e - Form submit event
      */
-    useEffect(() => {
-        const saveForm = saveFormRef.current;
-        if (!saveForm) {
+    const handleSaveSubmit = (e) => {
+        e.preventDefault();
+        const distanceX = Number(e.target.distanceX.value);
+        const distanceY = Number(e.target.distanceY.value);
+        if (Number.isFinite(distanceX) && Number.isFinite(distanceY)) {
+            onSaveMeasurement(distanceX, distanceY);
+            e.target.reset();
+        }
+    };
+
+    /**
+     * Handles keyboard shortcuts for robot control.
+     * Maps specific keys to actions (move, turn, relax).
+     * @param {KeyboardEvent} e - Keyboard event
+     */
+    const handleKeyDown = (e) => {
+        if (loading) {
             return;
         }
 
-        const handleSaveSubmit = (event) => {
-            event.preventDefault();
-
-            const distanceX = Number(event.target.distanceX.value);
-            const distanceY = Number(event.target.distanceY.value);
-
-            if (!Number.isFinite(distanceX) || !Number.isFinite(distanceY)) {
-                return;
-            }
-
-            onSaveMeasurement(distanceX, distanceY);
-            saveForm.reset();
+        const keyMap = {
+            'm': 'move',
+            'M': 'move',
+            't': 'turn',
+            'T': 'turn',
+            ' ': 'relax',
+            'r': 'relax',
+            'R': 'relax',
         };
 
-        saveForm.addEventListener('submit', handleSaveSubmit);
+        const action = keyMap[e.key];
+        if (!action) {
+            return;
+        }
 
-        return () => {
-            saveForm.removeEventListener('submit', handleSaveSubmit);
-        };
-    }, [onSaveMeasurement]);
+        e.preventDefault();
+
+        if (action === 'move') {
+            onOpenMove();
+        }
+        if (action === 'turn') {
+            onOpenTurn();
+        }
+        if (action === 'relax') {
+            onRelax();
+        }
+    };
 
     return (
-        <div className="grid two-columns">
+        <div
+            className="grid two-columns"
+            onKeyDown={handleKeyDown}
+            tabIndex={0}
+        >
             <section className="panel">
                 <h2>Movement Control</h2>
 
-                <form className="inline-form" ref={stepFormRef}>
+                <form className="inline-form" onSubmit={handleStepSubmit}>
                     <label>
                         Step Duration (ms)
                         <input
-                            key={status.step_size}
                             name="stepSize"
                             type="number"
                             min="500"
@@ -180,7 +113,7 @@ export default function ControlPanel({
                     <div className="direction-grid">
                         <button
                             type="button"
-                            ref={moveButtonRef}
+                            onClick={onOpenMove}
                             disabled={loading}
                             className="direction-btn"
                         >
@@ -189,7 +122,7 @@ export default function ControlPanel({
 
                         <button
                             type="button"
-                            ref={turnButtonRef}
+                            onClick={onOpenTurn}
                             disabled={loading}
                             className="secondary direction-btn"
                         >
@@ -200,7 +133,7 @@ export default function ControlPanel({
                     <div className="action-row">
                         <button
                             type="button"
-                            ref={relaxButtonRef}
+                            onClick={onRelax}
                             disabled={loading}
                             className="secondary relax-btn"
                         >
@@ -216,19 +149,19 @@ export default function ControlPanel({
                 <div className="status-grid">
                     <div>
                         <span>Battery</span>
-                        <span classname="bold-text">{statusLabel.battery}</span>
+                        <span className="bold-text">{statusLabel.battery}</span>
                     </div>
                     <div>
                         <span>Percentage</span>
-                        <span classname="bold-text">{statusLabel.percent}</span>
+                        <span className="bold-text">{statusLabel.percent}</span>
                     </div>
                     <div>
                         <span>Distance to Object</span>
-                        <span classname="bold-text">{statusLabel.distance}</span>
+                        <span className="bold-text">{statusLabel.distance}</span>
                     </div>
                     <div>
                         <span>Current Step</span>
-                        <span classname="bold-text">{statusLabel.step}</span>
+                        <span className="bold-text">{statusLabel.step}</span>
                     </div>
                 </div>
 
@@ -237,12 +170,12 @@ export default function ControlPanel({
 
                     {lastMovement ? (
                         <ul>
-                            <li><span classname="bold-text">ID:</span> {lastMovement.id}</li>
-                            <li><span classname="bold-text">Direction:</span> {lastMovement.direction}</li>
-                            <li><span classname="bold-text">Steps:</span> {lastMovement.steps}</li>
-                            <li><span classname="bold-text">Step Size:</span> {lastMovement.step_size} ms</li>
+                            <li><span className="bold-text">ID:</span> {lastMovement.id}</li>
+                            <li><span className="bold-text">Direction:</span> {lastMovement.direction}</li>
+                            <li><span className="bold-text">Steps:</span> {lastMovement.steps}</li>
+                            <li><span className="bold-text">Step Size:</span> {lastMovement.step_size} ms</li>
                             <li>
-                                <span classname="bold-text">Battery:</span>{' '}
+                                <span className="bold-text">Battery:</span>{' '}
                                 {lastMovement.battery_volt.toFixed(2)} V
                             </li>
                         </ul>
@@ -251,7 +184,7 @@ export default function ControlPanel({
                     )}
                 </div>
 
-                <form className="inline-form save-form" ref={saveFormRef}>
+                <form className="inline-form save-form" onSubmit={handleSaveSubmit}>
                     <label>
                         Δx (cm)
                         <input

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ControlPanel from './components/ControlPanel.jsx';
 import HistoryPanel from './components/HistoryPanel.jsx';
 import MovementModal from './components/MovementModal.jsx';
@@ -24,10 +24,6 @@ export default function App() {
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
     const [modal, setModal] = useState({ open: false, isMove: true });
-
-    // Refs for DOM elements to attach event listeners
-    const controlRef = useRef(null);
-    const historyRef = useRef(null);
 
     /**
      * Cached status labels for display purposes.
@@ -118,26 +114,6 @@ export default function App() {
 
         return () => clearTimeout(timeout);
     }, [message]);
-
-    /**
-     * Sets up event listeners for tab buttons.
-     * Uses refs to avoid re-renders and cleans up listeners on unmount.
-     */
-    useEffect(() => {
-        const controlBtn = controlRef.current;
-        const historyBtn = historyRef.current;
-
-        const handleControl = () => setView('control');
-        const handleHistory = () => setView('history');
-
-        controlBtn?.addEventListener('click', handleControl);
-        historyBtn?.addEventListener('click', handleHistory);
-
-        return () => {
-            controlBtn?.removeEventListener('click', handleControl);
-            historyBtn?.removeEventListener('click', handleHistory);
-        };
-    }, []);
 
     /**
      * Opens the movement modal for move/turn actions.
@@ -268,10 +244,16 @@ export default function App() {
                     <h1>Robot Dog Control</h1>
                 </div>
                 <div className="tabs">
-                    <button ref={controlRef} className={view === 'control' ? 'active' : ''}>
+                    <button
+                        className={view === 'control' ? 'active' : ''}
+                        onClick={() => setView('control')}
+                    >
                         Commands
                     </button>
-                    <button ref={historyRef} className={view === 'history' ? 'active' : ''}>
+                    <button
+                        className={view === 'history' ? 'active' : ''}
+                        onClick={() => setView('history')}
+                    >
                         History
                     </button>
                 </div>

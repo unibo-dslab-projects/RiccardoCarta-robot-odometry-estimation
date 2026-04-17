@@ -10,8 +10,6 @@ export default function MovementModal({ isMove, onClose, onConfirm, loading }) {
     const [steps, setSteps] = useState(1);
 
     // Refs for DOM elements to attach event listeners
-    const selectRef = useRef(null);
-    const inputRef = useRef(null);
     const cancelRef = useRef(null);
     const executeRef = useRef(null);
 
@@ -112,52 +110,26 @@ export default function MovementModal({ isMove, onClose, onConfirm, loading }) {
     }, [loading, isMove]);
 
     /**
-     * Attaches event listeners to form elements and action buttons.
-     * Handles direction change, step input, cancel, and execute actions.
-     * Cleans up listeners on unmount.
+     * Handles cancel action.
      */
-    useEffect(() => {
-        const selectEl = selectRef.current;
-        const inputEl = inputRef.current;
-        const cancelBtn = cancelRef.current;
-        const executeBtn = executeRef.current;
+    const handleCancel = () => {
+        if (!loading) {
+            onClose();
+        }
+    };
 
-        const handleSelectChange = (e) => {
-            setDirection(e.target.value);
-        };
-
-        const handleInputChange = (e) => {
-            setSteps(Math.max(1, Math.min(100, Number(e.target.value))));
-        };
-
-        const handleCancel = () => {
-            if (!loading) {
-                onClose();
-            }
-        };
-
-        const handleExecute = () => {
-            if (loading) {
-                return;
-            }
-            if (steps < 1 || steps > 100) {
-                return;
-            }
-            onConfirm({ direction, steps, isMove });
-        };
-
-        selectEl?.addEventListener('change', handleSelectChange);
-        inputEl?.addEventListener('input', handleInputChange);
-        cancelBtn?.addEventListener('click', handleCancel);
-        executeBtn?.addEventListener('click', handleExecute);
-
-        return () => {
-            selectEl?.removeEventListener('change', handleSelectChange);
-            inputEl?.removeEventListener('input', handleInputChange);
-            cancelBtn?.removeEventListener('click', handleCancel);
-            executeBtn?.removeEventListener('click', handleExecute);
-        };
-    }, [direction, steps, isMove, loading, onClose, onConfirm]);
+    /**
+     * Handles execute action.
+     */
+    const handleExecute = () => {
+        if (loading) {
+            return;
+        }
+        if (steps < 1 || steps > 100) {
+            return;
+        }
+        onConfirm({ direction, steps, isMove });
+    };
 
     return (
         <div className="modal-backdrop" role="dialog" aria-modal="true">
@@ -172,7 +144,11 @@ export default function MovementModal({ isMove, onClose, onConfirm, loading }) {
 
                 <label>
                     Direction {isMove ? '(WASD)' : '(A/D)'}
-                    <select ref={selectRef} value={direction} disabled={loading}>
+                    <select
+                        value={direction}
+                        disabled={loading}
+                        onChange={(e) => setDirection(e.target.value)}
+                    >
                         {getDirectionOptions().map((opt) => (
                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                         ))}
@@ -182,26 +158,26 @@ export default function MovementModal({ isMove, onClose, onConfirm, loading }) {
                 <label>
                     Number of Steps (use ↑↓ or input)
                     <input
-                        ref={inputRef}
                         type="number"
                         min="1"
                         max="100"
                         value={steps}
                         disabled={loading}
                         autoFocus
+                        onChange={(e) => setSteps(Math.max(1, Math.min(100, Number(e.target.value))))}
                     />
                 </label>
 
                 <div className="modal-preview">
-                    <span classname="bold-text">Direction:</span> {getDirectionLabel()} <br />
-                    <span classname="bold-text">Steps:</span> {steps}
+                    <span className="bold-text">Direction:</span> {getDirectionLabel()} <br />
+                    <span className="bold-text">Steps:</span> {steps}
                 </div>
 
                 <div className="modal-actions">
-                    <button type="button" className="secondary" ref={cancelRef} disabled={loading}>
+                    <button type="button" className="secondary" ref={cancelRef} disabled={loading} onClick={handleCancel}>
                         Cancel
                     </button>
-                    <button type="button" ref={executeRef} disabled={loading}>
+                    <button type="button" ref={executeRef} disabled={loading} onClick={handleExecute}>
                         Execute
                     </button>
                 </div>
