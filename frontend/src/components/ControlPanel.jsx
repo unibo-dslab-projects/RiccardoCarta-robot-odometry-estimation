@@ -1,21 +1,24 @@
-import { useRef } from 'react';
+import { forwardRef } from 'react';
 
 /**
  * ControlPanel component for robot movement and status management.
  * Handles keyboard shortcuts, button events, and form submissions for robot control.
  * Uses React synthetic events for better performance and cleaner code.
  */
-export default function ControlPanel({
-    status,
-    statusLabel,
-    lastMovement,
-    loading,
-    onOpenMove,
-    onOpenTurn,
-    onSetStep,
-    onRelax,
-    onSaveMeasurement,
-}) {
+const ControlPanel = forwardRef(function ControlPanel(
+    {
+        status,
+        statusLabel,
+        lastMovement,
+        loading,
+        onOpenMove,
+        onOpenTurn,
+        onSetStep,
+        onRelax,
+        onSaveMeasurement,
+    },
+    ref
+) {
     /**
      * Handles step size form submission.
      * Validates input and calls onSetStep with the new value.
@@ -84,6 +87,7 @@ export default function ControlPanel({
 
     return (
         <div
+            ref={ref}
             className="grid two-columns"
             onKeyDown={handleKeyDown}
             tabIndex={0}
@@ -214,4 +218,6 @@ export default function ControlPanel({
             </section>
         </div>
     );
-}
+});
+
+export default ControlPanel;

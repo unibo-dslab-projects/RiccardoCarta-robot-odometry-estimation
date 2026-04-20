@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import ControlPanel from './components/ControlPanel.jsx';
 import HistoryPanel from './components/HistoryPanel.jsx';
 import MovementModal from './components/MovementModal.jsx';
@@ -24,6 +24,7 @@ export default function App() {
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
     const [modal, setModal] = useState({ open: false, isMove: true });
+    const controlPanelRef = useRef(null);
 
     /**
      * Cached status labels for display purposes.
@@ -152,6 +153,9 @@ export default function App() {
 
             await refreshStatus();
             setModal({ open: false, isMove: true });
+            if (controlPanelRef.current) {
+                controlPanelRef.current.focus();
+            }
         } catch (err) {
             setError(err.message);
         } finally {
@@ -175,6 +179,9 @@ export default function App() {
             });
             setMessage(result.message);
             await refreshStatus();
+            if (controlPanelRef.current) {
+                controlPanelRef.current.focus();
+            }
         } catch (err) {
             setError(err.message);
         } finally {
@@ -192,6 +199,9 @@ export default function App() {
         try {
             const result = await api('/api/relax', { method: 'POST' });
             setMessage(result.message);
+            if (controlPanelRef.current) {
+                controlPanelRef.current.focus();
+            }
         } catch (err) {
             setError(err.message);
         } finally {
@@ -230,6 +240,9 @@ export default function App() {
             setMessage(result.message);
             setLastMovement(null);
             await refreshHistory();
+            if (controlPanelRef.current) {
+                controlPanelRef.current.focus();
+            }
         } catch (err) {
             setError(err.message);
         } finally {
@@ -264,6 +277,7 @@ export default function App() {
 
             {view === 'control' ? (
                 <ControlPanel
+                    ref={controlPanelRef}
                     status={status}
                     statusLabel={statusLabel}
                     lastMovement={lastMovement}
