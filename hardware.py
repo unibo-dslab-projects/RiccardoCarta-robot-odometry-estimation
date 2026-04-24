@@ -34,7 +34,7 @@ class BaseHardware(ABC):
 
 # Concrete implementation for robot hardware, communicates via HTTP
 class RobotBridgeHardware(BaseHardware):
-    def __init__(self, base_url: str | None = None, timeout: float = 20.0) -> None:
+    def __init__(self, base_url: str | None = None, timeout: float = 100.0) -> None:
         # Set base URL from argument, environment variable, or default
         self.base_url = (base_url or os.getenv("ROBOT_SERVER_URL", "http://127.0.0.1:8001")).rstrip("/")
         self.timeout = timeout
