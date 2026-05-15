@@ -4,6 +4,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+import pandas as pd
+import joblib
+
 from DogControlInterface import DogControlInterface
 
 # Initialize FastAPI app
@@ -19,6 +22,38 @@ app.add_middleware(
 
 # Initialize robot control interface
 dci = DogControlInterface()
+
+# Load odometry models
+PATH = "models/"
+MODEL_FILES = {
+    "Random Forest": PATH + "model_rf.joblib",
+    "XGBoost":       PATH + "model_xgb.joblib",
+    "MLP":           PATH + "model_mlp.joblib",
+}
+
+odometry_models = {}
+for name, filename in MODEL_FILES.items():
+    try:
+        odometry_models[name] = joblib.load(filename)
+        print("Modelli carichi:", list(odometry_models.keys()))
+    except FileNotFoundError:
+        print(f"[WARNING] {filename} not found — {name} predictions unavailable")
+
+def predict_all(direction, steps, step_size, battery_volt):
+    input_df = pd.DataFrame([{
+        "direction":    direction,
+        "steps":        steps,
+        "step_size":    step_size,
+        "battery_volt": battery_volt,
+    }])
+    predictions = {}
+    for name, model in odometry_models.items():
+        dx, dy = model.predict(input_df)[0]
+        predictions[name] = {
+            "predicted_x_cm": round(float(dx), 2),
+            "predicted_y_cm": round(float(dy), 2),
+        }
+    return predictions
 
 # Pydantic model for move request
 class MoveRequest(BaseModel):
@@ -56,7 +91,12 @@ def status():
 @app.post("/api/move")
 def move(request: MoveRequest):
     try:
-        return dci.move(request.direction, request.steps)
+        result = dci.move(request.direction, request.steps)
+        result["predictions"] = predict_all(
+            result["direction"], result["steps"],
+            result["step_size"], result["battery_volt"],
+        )
+        return result
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 

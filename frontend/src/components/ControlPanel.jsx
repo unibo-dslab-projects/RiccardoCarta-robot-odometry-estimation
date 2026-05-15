@@ -173,16 +173,36 @@ const ControlPanel = forwardRef(function ControlPanel(
                     <h3>Last Movement</h3>
 
                     {lastMovement ? (
-                        <ul>
-                            <li><span className="bold-text">ID:</span> {lastMovement.id}</li>
-                            <li><span className="bold-text">Direction:</span> {lastMovement.direction}</li>
-                            <li><span className="bold-text">Steps:</span> {lastMovement.steps}</li>
-                            <li><span className="bold-text">Step Size:</span> {lastMovement.step_size} ms</li>
-                            <li>
-                                <span className="bold-text">Battery:</span>{' '}
-                                {lastMovement.battery_volt.toFixed(2)} V
-                            </li>
-                        </ul>
+                        <>
+                            <ul>
+                                <li><span className="bold-text">ID:</span> {lastMovement.id}</li>
+                                <li><span className="bold-text">Direction:</span> {lastMovement.direction}</li>
+                                <li><span className="bold-text">Steps:</span> {lastMovement.steps}</li>
+                                <li><span className="bold-text">Step Size:</span> {lastMovement.step_size} ms</li>
+                                <li><span className="bold-text">Battery:</span> {lastMovement.battery_volt.toFixed(2)} V</li>
+                            </ul>
+
+                            {lastMovement.predictions && Object.keys(lastMovement.predictions).length > 0 ? (
+                                <div style={{
+                                    marginTop: '0.75rem', padding: '0.75rem',
+                                    background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '10px',
+                                }}>
+                                    <p style={{ margin: '0 0 0.5rem', fontWeight: 600, fontSize: '0.9rem', color: '#1e40af' }}>
+                                        ML Predicted Displacement
+                                    </p>
+                                    {Object.entries(lastMovement.predictions).map(([name, pred]) => (
+                                        <p key={name} style={{ margin: '0.2rem 0', fontSize: '0.9rem' }}>
+                                            <span className="bold-text">{name}:</span>{' '}
+                                            Δx {pred.predicted_x_cm.toFixed(2)} cm, Δy {pred.predicted_y_cm.toFixed(2)} cm
+                                        </p>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '0.5rem' }}>
+                                    Model predictions unavailable.
+                                </p>
+                            )}
+                        </>
                     ) : (
                         <p className="no-movement">No movement executed yet.</p>
                     )}

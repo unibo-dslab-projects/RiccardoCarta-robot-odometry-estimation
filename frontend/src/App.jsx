@@ -148,6 +148,7 @@ export default function App() {
             setMessage(result.message || 'Operation completed');
 
             if (isMove) {
+                console.log("Risposta da /api/move:", result);
                 setLastMovement(result);
             }
 
@@ -238,6 +239,7 @@ export default function App() {
                 }),
             });
             setMessage(result.message);
+            console.log("Risposta da /api/move:", result);
             setLastMovement(null);
             await refreshHistory();
             if (controlPanelRef.current) {
