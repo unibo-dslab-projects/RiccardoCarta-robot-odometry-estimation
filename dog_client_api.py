@@ -27,8 +27,8 @@ dci = DogControlInterface()
 PATH = "models/"
 MODEL_FILES = {
     "Random Forest": PATH + "model_rf.joblib",
-    "XGBoost":       PATH + "model_xgb.joblib",
-    "MLP":           PATH + "model_mlp.joblib",
+    "XGBoost": PATH + "model_xgb.joblib",
+    "MLP": PATH + "model_mlp.joblib",
 }
 
 odometry_models = {}
@@ -41,9 +41,9 @@ for name, filename in MODEL_FILES.items():
 
 def predict_all(direction, steps, step_size, battery_volt):
     input_df = pd.DataFrame([{
-        "direction":    direction,
-        "steps":        steps,
-        "step_size":    step_size,
+        "direction": direction,
+        "steps": steps,
+        "step_size": step_size,
         "battery_volt": battery_volt,
     }])
     predictions = {}
